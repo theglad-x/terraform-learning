@@ -2,33 +2,28 @@ provider "aws" {
     region = "us-east-1" 
 }
 
-variable "subnet_cidr_block" {
-  description = "subnet cidr block"
+variable "cidr_blocks" {
+  description = "All cidr blocks and name tags for vpc and subnet"
+  default = "10.0.10.0/24"
+  type = list(object({
+    cidr_block = string
+    name = string
+  }))
 }
-
-variable "vpc_cidr_block" {
-    description = "vpc cidr block"
-}
-
-variable "environment" {
-    description = "deploment environment" 
-}
-
 
 resource "aws_vpc" "dev-vpc" {
-    cidr_block = var.vpc_cidr_block
+    cidr_block = var.cidr_blocks[0].cidr_block
     tags = {
-        Name = var.environment
-        vpc_env: "first"
+        Name = var.cidr_blocks[0].name
     }
 }
 
 resource "aws_subnet" "dev-subnet-1" {
     vpc_id = aws_vpc.dev-vpc.id
-    cidr_block = var.subnet_cidr_block
+    cidr_block = var.cidr_blocks[1].cidr_block
     availability_zone = "us-east-1a"
     tags = {
-        Name = "dev-subnet-1"
+        Name = var.cidr_blocks[1].name
     }
 }
 
@@ -38,10 +33,10 @@ data "aws_vpc" "existing-vpc" {
 
 resource "aws_subnet" "dev-subnet-2" {
     vpc_id = data.aws_vpc.existing-vpc.id
-    cidr_block = "172.31.96.0/20"
+    cidr_block = var.cidr_blocks[2].cidr_block
     availability_zone = "us-east-1b"
     tags = {
-      Name = "dev-subnet-2"
+      Name = var.cidr_blocks[2].name
     }
 }
 
@@ -52,3 +47,4 @@ output "dev-vpc-id" {
 output "dev-subnet-id" {
   value = aws_subnet.dev-subnet-1.id
 }
+
