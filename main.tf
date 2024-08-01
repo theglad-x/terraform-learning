@@ -25,6 +25,7 @@ resource "aws_subnet" "mydev-subnet-1" {
     Name = "${var.env-prefix}-subnet-1"
   }
 }
+
 resource "aws_route_table" "mydev-route-able" {
   vpc_id = aws_vpc.mydev-vpc.id
   route {
@@ -117,4 +118,3 @@ resource "aws_instance" "mydev-server" {
     Name = "${var.env-prefix}-server"
   }
 }
-
