@@ -112,14 +112,7 @@ resource "aws_instance" "mydev-server" {
   associate_public_ip_address = true
   key_name                    = aws_key_pair.tf-ssh-key-pair.key_name
 
-  user_data = <<EOF
-                  #!/bin/bash
-                  sudo apt update -y && sudo apt install docker.io
-                  sudo systemctl start docker
-                  sudo usermod aG ubuntu
-                  docker run -p 8080:80 nginx
-              EOF
-
+  user_data = file(user-data-script.sh)
   tags = {
     Name = "${var.env-prefix}-server"
   }
